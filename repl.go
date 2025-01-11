@@ -6,25 +6,9 @@ import (
 	"strings"
 )
 
-type command struct {
-	name        string
-	description string
-	callback    func() error
-}
-
-func getCommandRegistry() map[string]command {
-	return map[string]command{
-		"exit": {
-			name:        "exit",
-			description: "Exit the Pokedex",
-			callback:    commandExit,
-		},
-		"help": {
-			name:        "help",
-			description: "Displays a help message",
-			callback:    commandHelp,
-		},
-	}
+type config struct {
+	next     string
+	previous string
 }
 
 func run(s *bufio.Scanner) error {
@@ -33,6 +17,7 @@ func run(s *bufio.Scanner) error {
 	}
 
 	commands := getCommandRegistry()
+	conf := config{}
 
 	for {
 		fmt.Print("Pokedex > ")
@@ -49,7 +34,7 @@ func run(s *bufio.Scanner) error {
 			continue
 		}
 
-		if err := c.callback(); err != nil {
+		if err := c.callback(&conf); err != nil {
 			return err
 		}
 	}
