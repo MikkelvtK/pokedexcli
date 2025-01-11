@@ -7,6 +7,8 @@ import (
 	"github.com/MikkelvtK/pokedexcli/internal/pokeapi"
 )
 
+const baseUrl = "https://pokeapi.co/api/v2"
+
 type command struct {
 	name        string
 	description string
@@ -56,7 +58,7 @@ func commandExit(conf *config) error {
 
 func commandMap(conf *config) error {
 	if len(conf.next) == 0 {
-		conf.next = "https://pokeapi.co/api/v2/location/"
+		conf.next = fmt.Sprintf("%s/location", baseUrl)
 	}
 
 	result, err := pokeapi.Get[pokeapi.LocationApi](conf.next)

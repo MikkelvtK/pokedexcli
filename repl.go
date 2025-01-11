@@ -4,37 +4,35 @@ import (
 	"bufio"
 	"fmt"
 	"strings"
+
+	"github.com/MikkelvtK/pokedexcli/internal/pokecache"
 )
 
 type config struct {
+	cache    *pokecache.Cache
+	commands map[string]command
+	scanner  *bufio.Scanner
 	next     string
 	previous string
 }
 
-func run(s *bufio.Scanner) error {
-	if s == nil {
-		return fmt.Errorf("no scanner was provided")
-	}
-
-	commands := getCommandRegistry()
-	conf := config{}
-
+func run(conf *config) error {
 	for {
 		fmt.Print("Pokedex > ")
-		s.Scan()
-		input := cleanInput(s.Text())
+		conf.scanner.Scan()
+		input := cleanInput(conf.scanner.Text())
 
 		if len(input) == 0 {
 			continue
 		}
 
-		c, ok := commands[input[0]]
+		c, ok := conf.commands[input[0]]
 		if !ok {
 			fmt.Println("Unknown command")
 			continue
 		}
 
-		if err := c.callback(&conf); err != nil {
+		if err := c.callback(conf); err != nil {
 			return err
 		}
 	}

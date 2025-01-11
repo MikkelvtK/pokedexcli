@@ -33,7 +33,7 @@ func (c *Cache) Add(k string, val []byte) {
 	c.mut.Unlock()
 }
 
-func (c *Cache) Get(k string, val []byte) ([]byte, bool) {
+func (c *Cache) Get(k string) ([]byte, bool) {
 	c.mut.Lock()
 	e, ok := c.entries[k]
 	c.mut.Unlock()
