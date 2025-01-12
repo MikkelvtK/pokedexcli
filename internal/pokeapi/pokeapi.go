@@ -13,6 +13,7 @@ import (
 const (
 	baseUrl              = "https://pokeapi.co/api/v2"
 	locationAreaEndpoint = "/location-area"
+	pokemonEndpoint      = "/pokemon"
 )
 
 type PokeAPI struct {

@@ -38,6 +38,11 @@ func getCommandRegistry() map[string]command {
 			description: "Explore area for Pokemon",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a Pokemon",
+			callback:    commandCatch,
+		},
 	}
 }
 
@@ -110,5 +115,15 @@ func commandExplore(args []string, conf *config) error {
 	for _, pokemon := range result.PokemonEncounters {
 		fmt.Printf(("- %s\n"), pokemon.Pokemon.Name)
 	}
+	return nil
+}
+
+func commandCatch(args []string, conf *config) error {
+	if len(args) < 2 {
+		fmt.Println("no pokemon name provided")
+		return nil
+	}
+
+	fmt.Printf("Throwing a Pokeball at %s...\n", args[1])
 	return nil
 }
