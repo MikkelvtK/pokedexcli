@@ -1,6 +1,7 @@
 package pokecache
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -20,7 +21,7 @@ func NewCache(interval time.Duration) *Cache {
 		entries: map[string]entry{},
 		mut:     &sync.Mutex{},
 	}
-
+	go c.reapLoop(interval)
 	return c
 }
 
@@ -36,6 +37,7 @@ func (c *Cache) Add(k string, val []byte) {
 func (c *Cache) Get(k string) ([]byte, bool) {
 	c.mut.Lock()
 	e, ok := c.entries[k]
+	fmt.Println(e)
 	c.mut.Unlock()
 	return e.val, ok
 }
