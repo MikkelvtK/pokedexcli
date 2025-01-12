@@ -32,7 +32,7 @@ func run(conf *config) error {
 			continue
 		}
 
-		if err := c.callback(conf); err != nil {
+		if err := c.callback(input, conf); err != nil {
 			return err
 		}
 	}

@@ -10,7 +10,10 @@ import (
 	"github.com/MikkelvtK/pokedexcli/internal/pokecache"
 )
 
-const baseUrl = "https://pokeapi.co/api/v2"
+const (
+	baseUrl              = "https://pokeapi.co/api/v2"
+	locationAreaEndpoint = "/location-area"
+)
 
 type PokeAPI struct {
 	cache *pokecache.Cache
@@ -28,15 +31,51 @@ type LocationApi struct {
 	Results  []Location `json:"results"`
 }
 
+type AreaEncountersApi struct {
+	PokemonEncounters []struct {
+		Pokemon struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"pokemon"`
+	} `json:"pokemon_encounters"`
+}
+
 func NewPokeAPI(interval time.Duration) *PokeAPI {
 	return &PokeAPI{
 		cache: pokecache.NewCache(interval),
 	}
 }
 
+func (p *PokeAPI) LocationAreaEncounters(name string) (AreaEncountersApi, error) {
+	if len(name) == 0 {
+		return AreaEncountersApi{}, fmt.Errorf("no area name was provided")
+	}
+
+	url := fmt.Sprintf("%s%s/%s", baseUrl, locationAreaEndpoint, name)
+
+	var err error
+	data, ok := p.cache.Get(url)
+	if !ok {
+		data, err = get(url)
+		if err != nil {
+			return AreaEncountersApi{}, fmt.Errorf("error exploring area: %v", err)
+		}
+
+		p.cache.Add(url, data)
+	}
+
+	result := AreaEncountersApi{}
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		return AreaEncountersApi{}, err
+	}
+
+	return result, nil
+}
+
 func (p *PokeAPI) LocationAreas(url string) (LocationApi, error) {
 	if len(url) == 0 {
-		url = fmt.Sprintf("%s/location-area", baseUrl)
+		url = fmt.Sprintf("%s%s", baseUrl, locationAreaEndpoint)
 	}
 
 	var err error
