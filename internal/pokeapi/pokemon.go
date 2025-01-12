@@ -5,19 +5,33 @@ import (
 	"fmt"
 )
 
-type PokemonApi struct {
+type Pokemon struct {
 	ID             int    `json:"id"`
 	Name           string `json:"name"`
 	BaseExperience int    `json:"base_experience"`
 	Height         int    `json:"height"`
-	IsDefault      bool   `json:"is_default"`
-	Order          int    `json:"order"`
 	Weight         int    `json:"weight"`
+	Order          int    `json:"order"`
+	Stats          []struct {
+		BaseStat int `json:"base_stat"`
+		Effort   int `json:"effort"`
+		Stat     struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"stat"`
+	} `json:"stats"`
+	Types []struct {
+		Slot int `json:"slot"`
+		Type struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"type"`
+	}
 }
 
-func (p *PokeAPI) Pokemon(name string) (PokemonApi, error) {
+func (p *PokeAPI) Pokemon(name string) (Pokemon, error) {
 	if len(name) == 0 {
-		return PokemonApi{}, fmt.Errorf("no pokemon name was provided")
+		return Pokemon{}, fmt.Errorf("no pokemon name was provided")
 	}
 
 	url := fmt.Sprintf("%s%s/%s", baseUrl, pokemonEndpoint, name)
@@ -27,16 +41,16 @@ func (p *PokeAPI) Pokemon(name string) (PokemonApi, error) {
 	if !ok {
 		data, err = get(url)
 		if err != nil {
-			return PokemonApi{}, fmt.Errorf("error fetching pokemon: %v", err)
+			return Pokemon{}, fmt.Errorf("error fetching pokemon: %v", err)
 		}
 
 		p.cache.Add(url, data)
 	}
 
-	result := PokemonApi{}
+	result := Pokemon{}
 	err = json.Unmarshal(data, &result)
 	if err != nil {
-		return PokemonApi{}, err
+		return Pokemon{}, err
 	}
 
 	return result, nil

@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
+	"strings"
 )
 
 type command struct {
@@ -34,14 +36,19 @@ func getCommandRegistry() map[string]command {
 			callback:    commandMapb,
 		},
 		"explore": {
-			name:        "explore",
+			name:        "explore <location area>",
 			description: "Explore area for Pokemon",
 			callback:    commandExplore,
 		},
 		"catch": {
-			name:        "catch",
+			name:        "catch <pokemone name>",
 			description: "Catch a Pokemon",
 			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect <pokemon name>",
+			description: "Inspect a Pokemon",
+			callback:    commandInspect,
 		},
 	}
 }
@@ -125,5 +132,47 @@ func commandCatch(args []string, conf *config) error {
 	}
 
 	fmt.Printf("Throwing a Pokeball at %s...\n", args[1])
+
+	p, err := conf.pokeAPI.Pokemon(args[1])
+	if err != nil {
+		return err
+	}
+
+	if rand.Intn(p.BaseExperience) > 40 {
+		fmt.Printf("%s escaped!\n", p.Name)
+		return nil
+	}
+
+	conf.pokemon[p.Name] = p
+	fmt.Printf("%s was caught!\n", p.Name)
+	return nil
+}
+
+func commandInspect(args []string, conf *config) error {
+	if len(args) < 2 {
+		fmt.Println("no pokemon name provided")
+		return nil
+	}
+
+	name := strings.ToLower(args[1])
+	p, ok := conf.pokemon[name]
+	if !ok {
+		fmt.Printf("you have not caught %s\n", name)
+		return nil
+	}
+
+	fmt.Printf("Name: %s\n", p.Name)
+	fmt.Printf("Height: %d\n", p.Height)
+	fmt.Printf("Weight: %d\n", p.Weight)
+
+	fmt.Println("Stats:")
+	for _, s := range p.Stats {
+		fmt.Printf("  - %s: %d\n", s.Stat.Name, s.BaseStat)
+	}
+
+	fmt.Println("Types:")
+	for _, t := range p.Types {
+		fmt.Printf("  - %s\n", t.Type.Name)
+	}
 	return nil
 }

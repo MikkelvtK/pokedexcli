@@ -14,6 +14,7 @@ type config struct {
 	scanner  *bufio.Scanner
 	next     string
 	previous string
+	pokemon  map[string]pokeapi.Pokemon
 }
 
 func run(conf *config) error {
