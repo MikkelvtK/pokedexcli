@@ -6,14 +6,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/MikkelvtK/pokedexcli/internal/pokecache"
+	"github.com/MikkelvtK/pokedexcli/internal/pokeapi"
 )
 
 func main() {
 	c := &config{
 		commands: getCommandRegistry(),
 		scanner:  bufio.NewScanner(os.Stdin),
-		cache:    pokecache.NewCache(5 * time.Minute),
+		pokeAPI:  pokeapi.NewPokeAPI(5 * time.Minute),
 	}
 
 	if err := run(c); err != nil {

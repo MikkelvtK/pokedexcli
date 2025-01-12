@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/MikkelvtK/pokedexcli/internal/pokecache"
+	"github.com/MikkelvtK/pokedexcli/internal/pokeapi"
 )
 
 type config struct {
-	cache    *pokecache.Cache
+	pokeAPI  *pokeapi.PokeAPI
 	commands map[string]command
 	scanner  *bufio.Scanner
 	next     string

@@ -3,11 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-
-	"github.com/MikkelvtK/pokedexcli/internal/pokeapi"
 )
-
-const baseUrl = "https://pokeapi.co/api/v2"
 
 type command struct {
 	name        string
@@ -57,11 +53,7 @@ func commandExit(conf *config) error {
 }
 
 func commandMap(conf *config) error {
-	if len(conf.next) == 0 {
-		conf.next = fmt.Sprintf("%s/location", baseUrl)
-	}
-
-	result, err := pokeapi.Get[pokeapi.LocationApi](conf.next)
+	result, err := conf.pokeAPI.LocationAreas(conf.next)
 	if err != nil {
 		return err
 	}
@@ -81,7 +73,7 @@ func commandMapb(conf *config) error {
 		return nil
 	}
 
-	result, err := pokeapi.Get[pokeapi.LocationApi](conf.previous)
+	result, err := conf.pokeAPI.LocationAreas(conf.previous)
 	if err != nil {
 		return err
 	}
