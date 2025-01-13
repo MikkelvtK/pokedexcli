@@ -50,6 +50,11 @@ func getCommandRegistry() map[string]command {
 			description: "Inspect a Pokemon",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "List the Pokemon in your Pokedex",
+			callback:    commandPokedex,
+		},
 	}
 }
 
@@ -174,5 +179,20 @@ func commandInspect(args []string, conf *config) error {
 	for _, t := range p.Types {
 		fmt.Printf("  - %s\n", t.Type.Name)
 	}
+	return nil
+}
+
+func commandPokedex(_ []string, conf *config) error {
+	if len(conf.pokemon) == 0 {
+		fmt.Println("you have not caught any Pokemon yet")
+		return nil
+	}
+
+	fmt.Println("Your Pokedex:")
+
+	for _, p := range conf.pokemon {
+		fmt.Printf("  - %s\n", p.Name)
+	}
+
 	return nil
 }
