@@ -99,6 +99,31 @@ func (p *PokeAPI) LocationAreas(url string) (LocationApi, error) {
 	return result, nil
 }
 
+func getParsedResponse[T any](url string, c *pokecache.Cache) (T, error) {
+	if len(url) == 0 {
+		return *new(T), fmt.Errorf("no url was provided")
+	}
+
+	var err error
+	data, ok := c.Get(url)
+	if !ok {
+		data, err = get(url)
+		if err != nil {
+			return *new(T), err
+		}
+
+		c.Add(url, data)
+	}
+
+	result := *new(T)
+	err = json.Unmarshal(data, &result)
+	if err != nil {
+		return *new(T), err
+	}
+
+	return result, nil
+}
+
 func get(url string) ([]byte, error) {
 	res, err := http.Get(url)
 	if err != nil {
