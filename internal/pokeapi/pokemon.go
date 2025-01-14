@@ -1,7 +1,6 @@
 package pokeapi
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -36,19 +35,7 @@ func (p *PokeAPI) Pokemon(name string) (Pokemon, error) {
 
 	url := fmt.Sprintf("%s%s/%s", baseUrl, pokemonEndpoint, name)
 
-	var err error
-	data, ok := p.cache.Get(url)
-	if !ok {
-		data, err = get(url)
-		if err != nil {
-			return Pokemon{}, fmt.Errorf("error fetching pokemon: %v", err)
-		}
-
-		p.cache.Add(url, data)
-	}
-
-	result := Pokemon{}
-	err = json.Unmarshal(data, &result)
+	result, err := getParsedResponse[Pokemon](url, p.cache)
 	if err != nil {
 		return Pokemon{}, err
 	}
