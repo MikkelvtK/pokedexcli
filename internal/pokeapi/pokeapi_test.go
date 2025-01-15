@@ -84,6 +84,8 @@ func TestGetParsedResponseFromCache(t *testing.T) {
 	cache := pokecache.NewCache(999 * time.Minute)
 	for _, c := range cases {
 		ts := initTestServer(c.serverInput, t)
+		defer ts.Close()
+
 		input, _ := json.Marshal(c.cacheInput)
 		cache.Add(ts.URL, input)
 
@@ -95,6 +97,13 @@ func TestGetParsedResponseFromCache(t *testing.T) {
 		if res != c.cacheInput {
 			t.Errorf("expected %s from cache, got: %s", c.cacheInput, res)
 		}
+	}
+}
+
+func TestGetParsedResponsedNoURL(t *testing.T) {
+	_, err := getParsedResponse[string]("", nil)
+	if err == nil {
+		t.Errorf("exptexted no url given error")
 	}
 }
 
